@@ -5,6 +5,7 @@ Step-by-step guide to installing and provisioning an Arch Linux machine with Hip
 ## Prerequisites
 
 You need:
+
 - A machine to install on (or a QEMU VM for testing)
 - An Arch Linux live USB
 - Network access during installation (DHCP)
@@ -18,7 +19,7 @@ Boot the target machine from the Arch Linux live USB. You will land at a root sh
 ### 2. Download bootstrap.sh
 
 ```bash
-curl -LO https://raw.githubusercontent.com/hipponix/hippoarch/main/bootstrap.sh
+curl -LO https://raw.githubusercontent.com/mircosantori/hippoarch/main/bootstrap.sh
 ```
 
 ### 3. Inspect available profiles
@@ -45,18 +46,18 @@ Open the profile and set all required variables:
 vim profiles/server-cwwk.conf
 ```
 
-| Variable | Description | Example |
-|---|---|---|
-| `DISK` | Target block device (will be wiped) | `/dev/nvme0n1` |
-| `HOSTNAME` | Machine hostname | `arch-server` |
-| `USERNAME` | Primary user account | `nas` |
-| `ROOT_PASSWORD` | Root password | `changeme123` |
-| `USER_PASSWORD` | User password | `changeme123` |
-| `TIMEZONE` | Timezone string | `Europe/Rome` |
-| `LOCALE` | Locale | `en_US.UTF-8` |
-| `LAYOUT` | Partition layout | `simple` or `btrfs` |
-| `ROLE` | Hardware role to apply at provision time | `server-cwwk` |
-| `EXTRA_PACKAGES` | Space-separated additional packages | `"htop iotop"` |
+| Variable         | Description                              | Example             |
+| ---------------- | ---------------------------------------- | ------------------- |
+| `DISK`           | Target block device (will be wiped)      | `/dev/nvme0n1`      |
+| `HOSTNAME`       | Machine hostname                         | `arch-server`       |
+| `USERNAME`       | Primary user account                     | `nas`               |
+| `ROOT_PASSWORD`  | Root password                            | `changeme123`       |
+| `USER_PASSWORD`  | User password                            | `changeme123`       |
+| `TIMEZONE`       | Timezone string                          | `Europe/Rome`       |
+| `LOCALE`         | Locale                                   | `en_US.UTF-8`       |
+| `LAYOUT`         | Partition layout                         | `simple` or `btrfs` |
+| `ROLE`           | Hardware role to apply at provision time | `server-cwwk`       |
+| `EXTRA_PACKAGES` | Space-separated additional packages      | `"htop iotop"`      |
 
 > `DISK` must be a block device (`/dev/nvme0n1`, `/dev/sda`, etc.). The script aborts if `DISK` is not a block device.
 >
@@ -146,34 +147,34 @@ Best for single-disk setups and VMs. Straightforward, no subvolumes.
 
 Subvolumes created:
 
-| Subvolume | Mount point |
-|---|---|
-| `@` | `/` |
-| `@home` | `/home` |
-| `@snapshots` | `/.snapshots` |
-| `@var_log` | `/var/log` |
-| `@docker` | `/var/lib/docker` (if applicable) |
+| Subvolume    | Mount point                       |
+| ------------ | --------------------------------- |
+| `@`          | `/`                               |
+| `@home`      | `/home`                           |
+| `@snapshots` | `/.snapshots`                     |
+| `@var_log`   | `/var/log`                        |
+| `@docker`    | `/var/lib/docker` (if applicable) |
 
 Best for servers where you want snapshotting, separate rollback targets for `/home`, or Docker storage isolation.
 
 ## Available roles
 
-| Role | Hardware target | What it installs |
-|---|---|---|
-| `server-cwwk` | CWWK 8-bay NAS motherboard | lm_sensors, IT8620 driver, NAS tooling |
-| `server-k8s-master` | Kubernetes control plane node | kubeadm, kubectl, containerd |
-| `server-k8s-node` | Kubernetes worker node | containerd, node agent |
-| `workstation` | General-purpose desktop/laptop | Desktop packages, dev tools |
+| Role                | Hardware target                | What it installs                       |
+| ------------------- | ------------------------------ | -------------------------------------- |
+| `server-cwwk`       | CWWK 8-bay NAS motherboard     | lm_sensors, IT8620 driver, NAS tooling |
+| `server-k8s-master` | Kubernetes control plane node  | kubeadm, kubectl, containerd           |
+| `server-k8s-node`   | Kubernetes worker node         | containerd, node agent                 |
+| `workstation`       | General-purpose desktop/laptop | Desktop packages, dev tools            |
 
 ## Bootstrap options reference
 
-| Option | Description |
-|---|---|
-| `bash bootstrap.sh <profile>` | Run the full installation |
-| `bash bootstrap.sh --version` | Print the current HippoArch version |
-| `bash bootstrap.sh --detect` | Show CPU, disk, and RAM info |
-| `bash bootstrap.sh --list` | List all profiles in the repository |
-| `bash bootstrap.sh --fetch-all` | Download all profiles locally |
+| Option                                | Description                          |
+| ------------------------------------- | ------------------------------------ |
+| `bash bootstrap.sh <profile>`         | Run the full installation            |
+| `bash bootstrap.sh --version`         | Print the current HippoArch version  |
+| `bash bootstrap.sh --detect`          | Show CPU, disk, and RAM info         |
+| `bash bootstrap.sh --list`            | List all profiles in the repository  |
+| `bash bootstrap.sh --fetch-all`       | Download all profiles locally        |
 | `bash bootstrap.sh --fetch <profile>` | Download one profile without running |
 
 ## Post-install

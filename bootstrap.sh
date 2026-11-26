@@ -4,8 +4,8 @@
 set -e
 
 HIPPOARCH_VERSION=$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo "dev")
-REPO_RAW_URL="${HIPPOARCH_RAW_URL:-https://raw.githubusercontent.com/hipponix/hippoarch/v0.1.0}"
-REPO_API_URL="https://api.github.com/repos/hipponix/hippoarch/contents"
+REPO_RAW_URL="${HIPPOARCH_RAW_URL:-https://raw.githubusercontent.com/mircosantori/hippoarch/v0.1.0}"
+REPO_API_URL="https://api.github.com/repos/mircosantori/hippoarch/contents"
 
 detect_hardware() {
     echo "=== Hardware Detection ==="
@@ -31,54 +31,57 @@ detect_hardware() {
 
 list_profiles() {
     echo "=== Available Profiles ==="
-    curl -s "$REPO_API_URL/profiles" \
-        | grep '"name"' \
-        | sed 's/.*"name": "\([^"]*\)".*/\1/' \
-        | grep '\.conf$'
+    curl -s "$REPO_API_URL/profiles" |
+        grep '"name"' |
+        sed 's/.*"name": "\([^"]*\)".*/\1/' |
+        grep '\.conf$'
 }
 
 fetch_all() {
     echo "=== Fetching All Profiles ==="
     local profiles
-    profiles=$(curl -s "$REPO_API_URL/profiles" \
-        | grep '"name"' \
-        | sed 's/.*"name": "\([^"]*\)".*/\1/' \
-        | grep '\.conf$')
+    profiles=$(curl -s "$REPO_API_URL/profiles" |
+        grep '"name"' |
+        sed 's/.*"name": "\([^"]*\)".*/\1/' |
+        grep '\.conf$')
     mkdir -p profiles lib
     curl -sL -o lib/partition.sh "$REPO_RAW_URL/lib/partition.sh"
     while IFS= read -r name; do
         echo "Fetching $name..."
         curl -sL -o "profiles/$name" "$REPO_RAW_URL/profiles/$name"
-    done <<< "$profiles"
+    done <<<"$profiles"
     echo "Done. Profiles saved to profiles/"
 }
 
 case "${1:-}" in
-    --version)
-        echo "HippoArch $HIPPOARCH_VERSION"
-        exit 0
-        ;;
-    --detect)
-        detect_hardware
-        exit 0
-        ;;
-    --list)
-        list_profiles
-        exit 0
-        ;;
-    --fetch-all)
-        fetch_all
-        exit 0
-        ;;
-    --fetch)
-        [[ -z "${2:-}" ]] && { echo "Usage: $0 --fetch <profile_name>"; exit 1; }
-        _fetch_name="${2#profiles/}"
-        mkdir -p profiles lib
-        curl -sL -o "profiles/$_fetch_name" "$REPO_RAW_URL/profiles/$_fetch_name"
-        curl -sL -o lib/partition.sh "$REPO_RAW_URL/lib/partition.sh"
-        echo "Fetched to profiles/$_fetch_name"
-        exit 0
-        ;;
+--version)
+    echo "HippoArch $HIPPOARCH_VERSION"
+    exit 0
+    ;;
+--detect)
+    detect_hardware
+    exit 0
+    ;;
+--list)
+    list_profiles
+    exit 0
+    ;;
+--fetch-all)
+    fetch_all
+    exit 0
+    ;;
+--fetch)
+    [[ -z "${2:-}" ]] && {
+        echo "Usage: $0 --fetch <profile_name>"
+        exit 1
+    }
+    _fetch_name="${2#profiles/}"
+    mkdir -p profiles lib
+    curl -sL -o "profiles/$_fetch_name" "$REPO_RAW_URL/profiles/$_fetch_name"
+    curl -sL -o lib/partition.sh "$REPO_RAW_URL/lib/partition.sh"
+    echo "Fetched to profiles/$_fetch_name"
+    exit 0
+    ;;
 esac
 
 PROFILE=${1:-}
@@ -149,16 +152,16 @@ echo "=== Arch Linux Bootstrap: $HOSTNAME ==="
 # 2. Disk Setup (Modular)
 # shellcheck disable=SC2153
 case $LAYOUT in
-    simple)
-        layout_simple "$DISK"
-        ;;
-    btrfs)
-        layout_btrfs "$DISK"
-        ;;
-    *)
-        echo "Error: Unknown layout '$LAYOUT'"
-        exit 1
-        ;;
+simple)
+    layout_simple "$DISK"
+    ;;
+btrfs)
+    layout_btrfs "$DISK"
+    ;;
+*)
+    echo "Error: Unknown layout '$LAYOUT'"
+    exit 1
+    ;;
 esac
 
 # 3. Base Installation
@@ -187,7 +190,7 @@ pacstrap /mnt "${BASE_PKGS[@]}"
 
 # 4. Generate FSTAB
 echo "Generating fstab..."
-genfstab -U /mnt >> /mnt/etc/fstab
+genfstab -U /mnt >>/mnt/etc/fstab
 
 # 5. Chroot Configuration
 echo "Configuring system via chroot..."
@@ -266,11 +269,11 @@ else
 fi
 arch-chroot /mnt chown -R "$USERNAME":"$USERNAME" "/home/$USERNAME/hippoarch"
 
-BOOTSTRAP_ELAPSED=$(( $(date +%s) - BOOTSTRAP_START ))
+BOOTSTRAP_ELAPSED=$(($(date +%s) - BOOTSTRAP_START))
 BOOTSTRAP_TIME="$((BOOTSTRAP_ELAPSED / 60))m $((BOOTSTRAP_ELAPSED % 60))s"
 
 # Write install record and lock it
-cat > /mnt/etc/hippoarch.conf <<HICONF
+cat >/mnt/etc/hippoarch.conf <<HICONF
 SERVICES="${SERVICES:-}"
 ENABLE_FANCONTROL="${ENABLE_FANCONTROL:-0}"
 ENABLE_KDE="${ENABLE_KDE:-0}"

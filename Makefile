@@ -94,4 +94,4 @@ release:
 	git push origin main; \
 	git tag "v$$next"; \
 	git push origin "v$$next"; \
-	echo "Released v$$next — https://github.com/hipponix/hippoarch/actions"
+	echo "Released v$$next — https://github.com/mircosantori/hippoarch/actions"
