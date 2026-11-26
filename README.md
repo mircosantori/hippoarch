@@ -1,7 +1,7 @@
 # HippoArch
 
-[![CI](https://github.com/hipponix/hippoarch/actions/workflows/ci.yml/badge.svg)](https://github.com/hipponix/hippoarch/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/hipponix/hippoarch)](https://github.com/hipponix/hippoarch/releases/latest)
+[![CI](https://github.com/mircosantori/hippoarch/actions/workflows/ci.yml/badge.svg)](https://github.com/mircosantori/hippoarch/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/mircosantori/hippoarch)](https://github.com/mircosantori/hippoarch/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 HippoArch automates Arch Linux installation and post-install provisioning in two phases — bootstrap from the live ISO, then provision after reboot — with no dependencies beyond bash and standard Arch tools.
@@ -20,13 +20,13 @@ Flash a USB with the [Arch Linux ISO](https://archlinux.org/download/) and boot 
 
 > Pick one of the existing profiles or create your own — see the [Profiles](#profiles) section.
 
-![Phase 1 — Bootstrap demo](docs/phase1.svg) 
+![Phase 1 — Bootstrap demo](docs/phase1.svg)
 
 ### Phase 2 — Provisioning (post-reboot)
 
 Reboot into the freshly installed system and run `provision.sh`. It installs packages, configures hardware and sensors, deploys dotfiles, and applies the role-specific setup defined in the profile.
 
-![Phase 2 — Provision demo](docs/phase2.svg) 
+![Phase 2 — Provision demo](docs/phase2.svg)
 
 ## Installation guide
 
@@ -35,6 +35,7 @@ Reboot into the freshly installed system and run `provision.sh`. It installs pac
 1. Download the [Arch Linux ISO](https://archlinux.org/download/) and flash it to a USB drive.
 
    With [Balena Etcher](https://etcher.balena.io) (GUI), or with `dd`:
+
    ```bash
    dd if=archlinux-x86_64.iso of=/dev/sdX bs=4M status=progress && sync
    ```
@@ -45,7 +46,7 @@ Reboot into the freshly installed system and run `provision.sh`. It installs pac
 
 3. Download and extract the latest HippoArch release.
    ```bash
-   curl -LO hipponix.github.io/hippoarch/get && sh get
+   curl -LO https://mircosantori.github.io/hippoarch/get && sh get
    ```
 4. List available profiles to pick the right one for your hardware.
    ```bash
@@ -60,7 +61,7 @@ Reboot into the freshly installed system and run `provision.sh`. It installs pac
    bash bootstrap.sh profiles/workstation.conf
    ```
 
-*The following steps are performed automatically by `bootstrap.sh`:*
+_The following steps are performed automatically by `bootstrap.sh`:_
 
 7. Check that `DISK` is a valid block device and require explicit `yes` confirmation before any write.
 8. Create a GPT table with a 512 MB EFI partition and a root partition, and format them as FAT32 and ext4 or btrfs respectively.
@@ -81,7 +82,7 @@ Reboot into the freshly installed system and run `provision.sh`. It installs pac
    ./provision.sh
    ```
 
-*The following steps are performed automatically by `provision.sh`:*
+_The following steps are performed automatically by `provision.sh`:_
 
 4. Install the base packages defined in `common/base.sh`.
 5. Copy dotfiles (`.vimrc`, `.bash_aliases`) to the user home directory.
@@ -162,24 +163,24 @@ flowchart LR
 
 A profile is a `.conf` file sourced into `bootstrap.sh`. Required fields:
 
-| Variable | Example | Notes |
-|---|---|---|
-| `DISK` | `/dev/nvme0n1` | Must be a block device |
-| `HOSTNAME` | `arch-server` | |
-| `USERNAME` | `user` | Wheel group member |
-| `ROOT_PASSWORD` | — | Set in profile, never hardcoded |
-| `USER_PASSWORD` | — | Same |
-| `TIMEZONE` | `Europe/Rome` | |
-| `LOCALE` | `en_US.UTF-8` | |
-| `LAYOUT` | `simple` or `btrfs` | |
-| `SERVICES` | `"openssh:sshd fail2ban"` | Space-separated `pkg:svc` pairs; colon only when package name differs from service name |
-| `ENABLE_FANCONTROL` | `0` or `1` | Load it87 driver and start fancontrol |
-| `ENABLE_KDE` | `0` or `1` | Install plasma-meta and enable sddm |
-| `ENABLE_AIDE` | `0` or `1` | Initialise AIDE file-integrity database (requires `ENABLE_AUR=1`) |
-| `ENABLE_AUR` | `0` or `1` | Allow installing AUR packages via `makepkg`; required for `aide` and `it87-dkms-git` |
-| `CUSTOM_SCRIPT` | `"scripts/my-setup.sh"` | Run an extra script at the end of provision |
-| `EXTRA_PACKAGES` | `"htop"` | Space-separated, added to pacstrap |
-| `BASE_PKGS_REMOVE` | `"linux-firmware"` | Space-separated packages to drop from the default base before pacstrap |
+| Variable            | Example                   | Notes                                                                                   |
+| ------------------- | ------------------------- | --------------------------------------------------------------------------------------- |
+| `DISK`              | `/dev/nvme0n1`            | Must be a block device                                                                  |
+| `HOSTNAME`          | `arch-server`             |                                                                                         |
+| `USERNAME`          | `user`                    | Wheel group member                                                                      |
+| `ROOT_PASSWORD`     | —                         | Set in profile, never hardcoded                                                         |
+| `USER_PASSWORD`     | —                         | Same                                                                                    |
+| `TIMEZONE`          | `Europe/Rome`             |                                                                                         |
+| `LOCALE`            | `en_US.UTF-8`             |                                                                                         |
+| `LAYOUT`            | `simple` or `btrfs`       |                                                                                         |
+| `SERVICES`          | `"openssh:sshd fail2ban"` | Space-separated `pkg:svc` pairs; colon only when package name differs from service name |
+| `ENABLE_FANCONTROL` | `0` or `1`                | Load it87 driver and start fancontrol                                                   |
+| `ENABLE_KDE`        | `0` or `1`                | Install plasma-meta and enable sddm                                                     |
+| `ENABLE_AIDE`       | `0` or `1`                | Initialise AIDE file-integrity database (requires `ENABLE_AUR=1`)                       |
+| `ENABLE_AUR`        | `0` or `1`                | Allow installing AUR packages via `makepkg`; required for `aide` and `it87-dkms-git`    |
+| `CUSTOM_SCRIPT`     | `"scripts/my-setup.sh"`   | Run an extra script at the end of provision                                             |
+| `EXTRA_PACKAGES`    | `"htop"`                  | Space-separated, added to pacstrap                                                      |
+| `BASE_PKGS_REMOVE`  | `"linux-firmware"`        | Space-separated packages to drop from the default base before pacstrap                  |
 
 ## Directory structure
 
@@ -212,14 +213,14 @@ hippoarch/
 
 ### Bootstrap reference
 
-| Option | Description |
-|--------|-------------|
-| `--version` | Print the current HippoArch version |
-| `--detect` | Show CPU, disk, and RAM info for the current machine |
-| `--list` | List available profiles from the GitHub repo |
-| `--fetch-all` | Download all profiles and `lib/partition.sh` locally |
+| Option              | Description                                                      |
+| ------------------- | ---------------------------------------------------------------- |
+| `--version`         | Print the current HippoArch version                              |
+| `--detect`          | Show CPU, disk, and RAM info for the current machine             |
+| `--list`            | List available profiles from the GitHub repo                     |
+| `--fetch-all`       | Download all profiles and `lib/partition.sh` locally             |
 | `--fetch <profile>` | Download a single profile and `lib/partition.sh` without running |
-| `<profile>` | Run the full bootstrap using the given profile |
+| `<profile>`         | Run the full bootstrap using the given profile                   |
 
 ### Setup
 

@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - "v*.*.*"
 
 jobs:
   release:
@@ -31,7 +31,7 @@ jobs:
           Boot the Arch Linux live ISO, then:
 
           \`\`\`bash
-          curl -LO https://github.com/hipponix/hippoarch/releases/latest/download/hippoarch.tar.gz
+          curl -LO https://github.com/mircosantori/hippoarch/releases/latest/download/hippoarch.tar.gz
           tar xzf hippoarch.tar.gz && cd hippoarch
           bash bootstrap.sh profiles/workstation.conf
           \`\`\`
