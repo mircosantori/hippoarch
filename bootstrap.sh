@@ -4,7 +4,8 @@
 set -e
 
 HIPPOARCH_VERSION=$(cat "$(dirname "$0")/VERSION" 2>/dev/null || echo "dev")
-REPO_RAW_URL="${HIPPOARCH_RAW_URL:-https://raw.githubusercontent.com/mircosantori/hippoarch/v0.1.0}"
+LATEST_TAG=$(curl -s https://api.github.com/repos/mircosantori/hippoarch/releases/latest | jq -r '.tag_name')
+REPO_RAW_URL="${HIPPOARCH_RAW_URL:-https://raw.githubusercontent.com/mircosantori/hippoarch/${LATEST_TAG}}"
 REPO_API_URL="https://api.github.com/repos/mircosantori/hippoarch/contents"
 
 detect_hardware() {
